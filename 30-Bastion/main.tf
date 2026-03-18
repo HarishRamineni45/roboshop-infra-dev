@@ -1,8 +1,8 @@
 resource "aws_instance" "bastion" {
   ami           = local.ami_id
   instance_type = "t3.micro"
-  subnet_id = local.public_subnet_id
-  vpc_security_group_ids = [local.bastion_sg_id]
+  subnet_id = local.database_subnet_id
+  vpc_security_group_ids = [local.mongodb_sg_id]
   iam_instance_profile = aws_iam_instance_profile.bastion.name
   user_data = file("bastion.sh")
 
