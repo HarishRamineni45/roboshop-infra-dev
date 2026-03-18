@@ -37,16 +37,3 @@ resource "terraform_data" "mongodb" {
   }
 }
 
-resource "aws_instance" "redis" {
-  ami           = local.ami_id
-  instance_type = "t3.micro"
-  subnet_id = local.database_subnet_id
-  vpc_security_group_ids = [local.redis_sg_id]
-
-  tags = merge(
-    {
-        Name = "${var.project}-${var.environment}-redis"
-    },
-    local.common_tags
-  )
-}
