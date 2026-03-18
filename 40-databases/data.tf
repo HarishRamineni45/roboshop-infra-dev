@@ -1,4 +1,4 @@
-data "aws_ami" "joindevops" {
+data "aws_ami" "ramineni" {
   most_recent      = true
   owners           = ["973714476881"]
 
