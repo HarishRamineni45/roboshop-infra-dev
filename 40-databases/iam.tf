@@ -24,3 +24,9 @@ resource "aws_iam_role" "mysql" {
       local.common_tags
   )
 }
+
+resource "aws_iam_policy" "mysql" {
+   name        = "${random_pet.pet_name.id}-policy"
+   description = "A policy for MySQL EC2 instance to access SSM parameters"
+   policy = file("mysql-iam-policy.json")
+}

@@ -14,4 +14,7 @@ locals {
   mysql_role_name    = join("-", [ 
               for name in ["${var.project}","${var.environment}","mysql"]: title(name) 
       ])
+  mysql_policy_name    = join("", [ 
+              for name in ["${var.project}","${var.environment}","mysql"]: title(name) 
+      ])
 }
