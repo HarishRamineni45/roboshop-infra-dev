@@ -29,15 +29,13 @@ resource "terraform_data" "mongodb" {
     destination = "/tmp/bootstrap.sh"    # Destination path on the remote machine
   }
 
- provisioner "remote-exec" {
+  provisioner "remote-exec" {
     inline = [
         "chmod +x /tmp/bootstrap.sh",
         "sudo sh /tmp/bootstrap.sh mongodb ${var.environment}"
     ]
   }
 }
-
-
 
 resource "aws_instance" "redis" {
   ami           = local.ami_id
@@ -53,7 +51,7 @@ resource "aws_instance" "redis" {
   )
 }
 
-resource "terraform_data" "redis" {
+resource "terraform_data" "bootstrap_redis" {
   triggers_replace = [
     aws_instance.redis.id
   ]
@@ -70,14 +68,13 @@ resource "terraform_data" "redis" {
     destination = "/tmp/bootstrap.sh"    # Destination path on the remote machine
   }
 
- provisioner "remote-exec" {
+  provisioner "remote-exec" {
     inline = [
         "chmod +x /tmp/bootstrap.sh",
         "sudo sh /tmp/bootstrap.sh redis ${var.environment}"
     ]
   }
 }
-
 
 resource "aws_instance" "mysql" {
   ami           = local.ami_id
@@ -111,7 +108,7 @@ resource "terraform_data" "mysql" {
     destination = "/tmp/bootstrap.sh"    # Destination path on the remote machine
   }
 
- provisioner "remote-exec" {
+  provisioner "remote-exec" {
     inline = [
         "chmod +x /tmp/bootstrap.sh",
         "sudo sh /tmp/bootstrap.sh mysql ${var.environment}"
@@ -119,13 +116,11 @@ resource "terraform_data" "mysql" {
   }
 }
 
-
 resource "aws_instance" "rabbitmq" {
   ami           = local.ami_id
   instance_type = "t3.micro"
   subnet_id = local.database_subnet_id
   vpc_security_group_ids = [local.rabbitmq_sg_id]
-  # iam_instance_profile = aws_iam_instance_profile.mysql.name
 
   tags = merge(
     {
@@ -152,13 +147,10 @@ resource "terraform_data" "rabbitmq" {
     destination = "/tmp/bootstrap.sh"    # Destination path on the remote machine
   }
 
- provisioner "remote-exec" {
+  provisioner "remote-exec" {
     inline = [
         "chmod +x /tmp/bootstrap.sh",
         "sudo sh /tmp/bootstrap.sh rabbitmq ${var.environment}"
     ]
   }
 }
-
-
-
