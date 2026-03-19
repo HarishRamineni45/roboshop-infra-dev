@@ -26,7 +26,12 @@ resource "aws_iam_role" "mysql" {
 }
 
 resource "aws_iam_policy" "mysql" {
-   name        = "${random_pet.pet_name.id}-policy"
+   name        = local.mysql_policy_name
    description = "A policy for MySQL EC2 instance to access SSM parameters"
    policy = file("mysql-iam-policy.json")
+}
+
+resource "aws_iam_role_policy_attachment" "mysql" {
+  role       = aws_iam_role.mysql.name
+  policy_arn = aws_iam_policy.mysql.arn
 }
