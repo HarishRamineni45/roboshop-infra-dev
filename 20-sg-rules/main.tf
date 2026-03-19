@@ -10,7 +10,7 @@ resource "aws_security_group_rule" "bastion_internet" {
   security_group_id = local.bastion_sg_id
 }
 
-# MongoDB
+# MongoDB is accessed by Bastion 
 resource "aws_security_group_rule" "mongodb_bastion" {
   type              = "ingress"
   from_port         = 22
@@ -21,6 +21,7 @@ resource "aws_security_group_rule" "mongodb_bastion" {
   security_group_id = local.mongodb_sg_id
 }
 
+# MongoDB is accessed by Bastion and Catalogue services
 resource "aws_security_group_rule" "mongodb_catalogue" {
   type              = "ingress"
   from_port         = 27017
@@ -31,6 +32,7 @@ resource "aws_security_group_rule" "mongodb_catalogue" {
   security_group_id = local.mongodb_sg_id
 }
 
+# MongoDB is accessed by Bastion and User services
 resource "aws_security_group_rule" "mongodb_user" {
   type              = "ingress"
   from_port         = 27017
@@ -41,6 +43,7 @@ resource "aws_security_group_rule" "mongodb_user" {
   security_group_id = local.mongodb_sg_id
 }
 
+# Redis is accessed by Bastion
 resource "aws_security_group_rule" "redis_bastion" {
   type              = "ingress"
   from_port         = 22
@@ -51,6 +54,7 @@ resource "aws_security_group_rule" "redis_bastion" {
   security_group_id = local.redis_sg_id
 }
 
+# MySQL is accessed by Bastion
 resource "aws_security_group_rule" "mysql_bastion" {
   type              = "ingress"
   from_port         = 22
@@ -61,6 +65,7 @@ resource "aws_security_group_rule" "mysql_bastion" {
   security_group_id = local.mysql_sg_id
 }
 
+# RabbitMQ is accessed by Bastion
 resource "aws_security_group_rule" "rabbitmq_bastion" {
   type              = "ingress"
   from_port         = 22
@@ -68,6 +73,16 @@ resource "aws_security_group_rule" "rabbitmq_bastion" {
   protocol          = "tcp"
   # Where traffic is coming from
   source_security_group_id = local.bastion_sg_id
+  security_group_id = local.rabbitmq_sg_id
+}
+
+resource "aws_security_group_rule" "rabbitmq_payment" {
+  type              = "ingress"
+  from_port         = 5672
+  to_port           = 5672
+  protocol          = "tcp"
+  # Where traffic is coming from
+  source_security_group_id = local.payment_sg_id
   security_group_id = local.rabbitmq_sg_id
 }
 
