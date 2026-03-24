@@ -66,14 +66,14 @@ resource "aws_lb_target_group" "catalogue" {
   vpc_id   = local.vpc_id
   deregistration_delay = 60
   health_check {
-    path                = "/health"
-    protocol            = "HTTP"
-    matcher             = "200-299"
-    interval            = 10
-    timeout             = 2
-    healthy_threshold   = 2
+    healthy_threshold = 2
+    interval = 10
+    matcher = "200-299"
+    path = "/health"
+    port = 8080
+    protocol = "HTTP"
+    timeout = 2
     unhealthy_threshold = 3
-    port                = 8080
   }
 }
 
@@ -143,7 +143,7 @@ resource "aws_autoscaling_group" "catalogue" {
   instance_refresh {
     strategy = "Rolling"
     preferences {
-      min_healthy_percentage = 100
+      min_healthy_percentage = 50
     }
       triggers = ["launch_template"]
   }
