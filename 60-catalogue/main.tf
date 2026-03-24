@@ -125,5 +125,87 @@ resource "aws_launch_template" "catalogue" {
   )
 }
  # creating autoscaling group with instances
+resource "aws_autoscaling_group" "catalogue" {
+  name                      = "${var.project}-${var.environment}-catalogue"
+  max_size                  = 10
+  min_size                  = 1
+  health_check_grace_period = 120
+  health_check_type         = "ELB"
+  desired_capacity          = 1
+  force_delete              = false
+  launch_template {
+    id      = aws_launch_template.catalogue.id
+    version = "$Latest"
+  }
+  vpc_zone_identifier       = [local.private_subnet_id]
+  target_group_arns         = [aws_lb_target_group.catalogue.arn]
 
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 100
+    }
+      triggers = ["launch_template"]
+  }
+
+  dynamic "tag" {
+    for_each = merge(
+      {
+          Name = "${var.project}-${var.environment}-catalogue"
+      },
+      local.common_tags
+    )
+    content {
+      key                 = each.key
+      value               = each.value
+      propagate_at_launch = true
+    }
+  }
+
+ # within 15min autoscaling wants to be successfull in launching instnaces if not therse should be some issue.
+  timeouts {
+    delete = "15m"
+  }
+}
+
+resource "aws_autoscaling_policy" "catalogue" {
+  autoscaling_group_name = aws_autoscaling_group.catalogue.name
+  name                   = "${var.project}-${var.environment}-catalogue"
+  policy_type            = "TargetTrackingScaling"
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+    target_value = 70.0
+  }
+}
+ 
+ # depends on target group
+resource "aws_lb_listener_rule" "catalogue" {
+  listener_arn = local.backend_alb_listener_arn
+  priority     = 10
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.catalogue.arn
+  }
+
+  condition {
+    host_header {
+      values = ["catalogue.backend-alb-${var.environment}.${var.domain_name}"]
+    }
+  }   
+}
+
+
+resource "terraform_data" "catalogue_delete" {
+  triggers_replace = [
+    aws_instance.catalogue.id
+  ]
+  depends_on = [aws_autoscaling_policy.catalogue]
+
+  provisioner "local-exec" {
+    command = "aws ec2 terminate-instances --instance-ids ${aws_instance.catalogue.id}"
+  }
+}
 
