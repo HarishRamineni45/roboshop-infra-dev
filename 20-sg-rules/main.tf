@@ -253,8 +253,8 @@ resource "aws_security_group_rule" "backend_alb_frontend" {          # Backend A
 
 resource "aws_security_group_rule" "frontend_bastion" {          #  frontend is accessed by Bastion
   type              = "ingress"
-  from_port         = 80
-  to_port           = 80
+  from_port         = 22
+  to_port           = 22
   protocol          = "tcp"
   source_security_group_id = local.bastion_sg_id  # Where traffic is coming from
   security_group_id = local.frontend_sg_id
