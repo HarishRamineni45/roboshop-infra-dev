@@ -4,3 +4,4 @@ module "component" {
     component = each.key
     rule_priority = each.value.rule_priority
 }
+

@@ -278,5 +278,26 @@ resource "aws_security_group_rule" "frontend_alb_public" {          # Frontend A
   security_group_id = local.frontend_alb_sg_id    # Where traffic is coming from
 }
 
+# open VPN
+resource "aws_security_group_rule" "OpenVpn_public_443" {          # openvpn is accessed by Internet/Public
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = local.openvpn_sg_id    # Where traffic is coming from
+}
+
+# Admin UI
+resource "aws_security_group_rule" "OpenVpn_public_943" {          # openvpn is accessed by Internet/Public
+  type              = "ingress"
+  from_port         = 943
+  to_port           = 943
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = local.openvpn_sg_id    # Where traffic is coming from
+}
+
+
 
 
