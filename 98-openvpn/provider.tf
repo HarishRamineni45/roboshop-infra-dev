@@ -1,17 +1,17 @@
 terraform {
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
       version = "6.33.0" # Terraform AWS provider version
     }
   }
 
   backend "s3" {
-    bucket  = "remote-state-ramineni-dev" # Replace with your unique bucket name
-    key     = "roboshop-dev-openvpn"
-    region  = "us-east-1"
-    encrypt = true
-    use_lockfile   = true
+    bucket       = "remote-state-ramineni-dev" # Replace with your unique bucket name
+    key          = "roboshop-dev-openvpn"
+    region       = "us-east-1"
+    encrypt      = true
+    use_lockfile = true
   }
 }
 
